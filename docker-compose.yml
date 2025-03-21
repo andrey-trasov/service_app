@@ -1,0 +1,11 @@
+services:    # сервисы
+  web-app:    # название сервиса
+    build:
+      context: .    # путь к доккер файлу
+    ports:    # порты
+      - "8000:8000"
+    volumes:    # подключение из локальной машины в доккер контейнер
+      - ./service:/service
+
+    command: >    # команда для запуска
+      sh -c "python manage.py runserver 0.0.0.0:8000"
