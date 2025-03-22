@@ -9,3 +9,18 @@ services:    # сервисы
 
     command: >    # команда для запуска
       sh -c "python manage.py runserver 0.0.0.0:8000"
+    environment:
+      - DB_HOST=database
+      - DB_USER=dbuser
+      - DB_PASS=pass
+      - DB_NAME=dbname
+
+    depends_on:    # зависимости сервиса от других
+      - database
+
+  database:
+    image: postgres:14.6-alpine
+    environment:
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=pass
+      - POSTGRES_DB=dbname
