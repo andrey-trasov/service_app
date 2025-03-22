@@ -14,8 +14,19 @@ from services.serializers import SubscriptionSerializer
 
 ################ возвращает только нужные поля для связанных моделей
 
+# class SubscriptionView(ReadOnlyModelViewSet):
+#     queryset = Subscription.objects.all().prefetch_related(
+#         Prefetch('client',
+#                  queryset=Client.objects.select_related('user').only('company', 'user__email'))
+#     )
+#     serializer_class = SubscriptionSerializer
+
+
+################ оптимизированные запрос с вложенным сериализатором
+
 class SubscriptionView(ReadOnlyModelViewSet):
     queryset = Subscription.objects.all().prefetch_related(
+        'plan',
         Prefetch('client',
                  queryset=Client.objects.select_related('user').only('company', 'user__email'))
     )
