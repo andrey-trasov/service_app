@@ -4,10 +4,9 @@ from services.models import Subscription
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
-    # client_name = serializers.CharField(source="client.company_name")
+    client_name = serializers.CharField(source="client.company")   #возвращает название компании а не id
     email = serializers.CharField(source="client.user.email")
 
     class Meta:
         model = Subscription
-        fields = ['id', 'plan_id', 'client', 'email']
-
+        fields = ['id', 'plan_id', 'client_name', 'email']
