@@ -24,3 +24,22 @@ services:    # сервисы
       - POSTGRES_USER=dbuser
       - POSTGRES_PASSWORD=pass
       - POSTGRES_DB=dbname
+
+
+  redis:
+    image: redis:7.0.5-alpine
+    hostname: redis
+
+  worker:
+    build:
+      context: .
+    hostname: worker
+    entrypoint: celery     # базовая команда для вызова других команд
+    command: -A celery_app.app worker --loglevel=info
+    volumes: # подключение из локальной машины в доккер контейнер
+      - ./service:/service
+    links:
+      - redis
+    depends_on:
+      - redis
+
