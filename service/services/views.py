@@ -30,8 +30,8 @@ class SubscriptionView(ReadOnlyModelViewSet):
         'plan',
         Prefetch('client',
                  queryset=Client.objects.select_related('user').only('company', 'user__email'))
-    ).annotate(price=F('service__full_price') -
-                     F('service__full_price') * F('plan__discount_percent') / 100.00)    # вычисление цены (влоденный сериализатор)
+    )#.annotate(price=F('service__full_price') -
+                     # F('service__full_price') * F('plan__discount_percent') / 100.00)    # вычисление цены (вложенный сериализатор)
     serializer_class = SubscriptionSerializer
 
 
