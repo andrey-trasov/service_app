@@ -49,6 +49,27 @@ services:    # сервисы
       - DB_PASS=pass
       - DB_NAME=dbname
 
+
+  worker2:
+    build:
+      context: .
+    hostname: worker2
+    entrypoint: celery     # базовая команда для вызова других команд
+    command: -A celery_app.app worker --loglevel=info
+    volumes: # подключение из локальной машины в доккер контейнер
+      - ./service:/service
+    links:
+      - redis
+    depends_on:
+      - redis
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_USER=dbuser
+      - DB_PASS=pass
+      - DB_NAME=dbname
+
+
   flower:
     build:
       context: .
