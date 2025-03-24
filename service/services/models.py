@@ -57,7 +57,12 @@ class Subscription(models.Model):
     service = models.ForeignKey(Service, related_name="subscriptions", on_delete=models.PROTECT)
     plan = models.ForeignKey(Plan, related_name="subscriptions", on_delete=models.PROTECT)
     price = models.PositiveIntegerField(default=0)
-    comment = models.CharField(max_length=50, default='')
+    comment = models.CharField(max_length=50, default='', db_index=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['price', 'plan']),
+        ]
 
     def save(self, *args, **kwargs):
         creating = not bool(self.id)    #проверка на создание нового пользователя (если в self нет переменной id)
