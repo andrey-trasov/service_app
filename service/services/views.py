@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import Prefetch, F, Sum
 from django.http import request
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -5,6 +6,9 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 from clients.models import Client
 from services.models import Subscription
 from services.serializers import SubscriptionSerializer
+
+from django.core.cache import cache
+from django.conf import settings
 
 ################ делает 1 запрос чтобы достать все записи по ключу, но возвращает все поля связанных моделей
 
@@ -40,8 +44,18 @@ class SubscriptionView(ReadOnlyModelViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         response = super().list(request, *args, **kwargs)
 
+        # price_cache_name = 'price_cashe'
+        price_cache = cache.get(settings.PRICE_CACHE_NAME)
+
+        if price_cache:    #проеряем наличие кэша
+            total_price = price_cache
+        else:    #если его нет
+            total_price = queryset.aggregate(total=Sum('price')).get('total')     #достаем значение из бд
+            cache.set(settings.PRICE_CACHE_NAME, total_price, 60 * 60)  # кэшируем значение
+
+
         response_data = {'result': response.data}
-        response_data['total_amount'] = queryset.aggregate(total=Sum('price')).get('total')
+        response_data['total_amount'] = total_price    #передаем значение
         response.data = response_data
 
         return response

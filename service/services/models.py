@@ -56,3 +56,12 @@ class Subscription(models.Model):
     plan = models.ForeignKey(Plan, related_name="subscriptions", on_delete=models.PROTECT)
     price = models.PositiveIntegerField(default=0)
     comment = models.CharField(max_length=50, default='')
+
+    def save(self, *args, **kwargs):
+        creating = not bool(self.id)    #проверка на создание нового пользователя (если в self нет переменной id)
+        result = super().save(*args, **kwargs)
+        if  creating:
+            set_price.delay(self.id)
+        return result
+
+
